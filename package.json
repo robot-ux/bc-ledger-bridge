@@ -1,0 +1,42 @@
+{
+  "name": "@binance-chain/bc-ledger-bridge",
+  "version": "0.0.0-development",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "start": "tsdx watch",
+    "build": "tsdx build",
+    "test": "tsdx test",
+    "lint": "tsdx lint src",
+    "prepare": "tsdx build"
+  },
+  "peerDependencies": {},
+  "husky": {
+    "hooks": {
+      "pre-commit": "tsdx lint"
+    }
+  },
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
+  "author": "@binance-chain",
+  "module": "dist/bc-ledger-bridge.esm.js",
+  "devDependencies": {
+    "@binance-chain/prettier-config": "^1.0.1",
+    "@types/jest": "^26.0.20",
+    "husky": "^5.1.3",
+    "tsdx": "^0.14.1",
+    "tslib": "^2.1.0",
+    "typescript": "^4.2.3"
+  },
+  "dependencies": {
+    "@binance-chain/javascript-sdk": "^4.1.1"
+  }
+}
