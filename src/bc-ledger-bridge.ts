@@ -23,8 +23,6 @@ export class BcLedgerBridge {
         if (e && e.data && e.data.target === 'BC-LEDGER-IFRAME') {
           const { action, params } = e.data;
           const replyAction = `${action}-reply`;
-          console.log('action', action);
-          console.log('params ', JSON.stringify(params));
           switch (action) {
             case 'ledger-unlock':
               this.unlock(replyAction, params.hdPath);
@@ -44,17 +42,19 @@ export class BcLedgerBridge {
   }
 
   async makeApp() {
-    try {
-      let transImpl = Ledger.transports['u2f'];
-      const transInst = await transImpl.create(15000);
-      this.transport = transInst;
-      this.app = new Ledger.app(
-        transInst,
-        DEFAULT_LEDGER_INTERACTIVE_TIMEOUT,
-        DEFAULT_LEDGER_NONINTERACTIVE_TIMEOUT
-      );
-    } catch (e) {
-      console.log('LEDGER:::CREATE APP ERROR', e);
+    if (!this.app) {
+      try {
+        let transImpl = Ledger.transports['u2f'];
+        const transInst = await transImpl.create(15000);
+        this.transport = transInst;
+        this.app = new Ledger.app(
+          transInst,
+          DEFAULT_LEDGER_INTERACTIVE_TIMEOUT,
+          DEFAULT_LEDGER_NONINTERACTIVE_TIMEOUT
+        );
+      } catch (e) {
+        console.log('LEDGER:::CREATE APP ERROR', e);
+      }
     }
   }
 
@@ -82,7 +82,7 @@ export class BcLedgerBridge {
         payload: { error: e.toString() },
       });
     } finally {
-      this.cleanUp();
+      // this.cleanUp();
     }
   }
 
@@ -103,13 +103,13 @@ export class BcLedgerBridge {
         payload: { error: e.toString() },
       });
     } finally {
-      this.cleanUp();
+      // this.cleanUp();
     }
   }
 
   mustHaveApp() {
     if (this.app === null) {
-      throw new Error('LedgerClient: Call init() first');
+      throw new Error('LedgerClient: Call makeApp() first');
     }
     return this.app;
   }
@@ -127,8 +127,6 @@ export class BcLedgerBridge {
     hrp?: string;
     limit?: number;
   }) {
-    console.log(`hdPathStart ${hdPathStart}`);
-    console.log(typeof hdPathStart);
     if (!Array.isArray(hdPathStart) || hdPathStart.length < 5) {
       throw new Error(
         'hdPathStart must be an array containing at least 5 path nodes'
