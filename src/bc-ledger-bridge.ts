@@ -42,19 +42,17 @@ export class BcLedgerBridge {
   }
 
   async makeApp() {
-    if (!this.app) {
-      try {
-        let transImpl = Ledger.transports['u2f'];
-        const transInst = await transImpl.create(15000);
-        this.transport = transInst;
-        this.app = new Ledger.app(
-          transInst,
-          DEFAULT_LEDGER_INTERACTIVE_TIMEOUT,
-          DEFAULT_LEDGER_NONINTERACTIVE_TIMEOUT
-        );
-      } catch (e) {
-        console.log('LEDGER:::CREATE APP ERROR', e);
-      }
+    try {
+      let transImpl = Ledger.transports['u2f'];
+      const transInst = await transImpl.create(15000);
+      this.transport = transInst;
+      this.app = new Ledger.app(
+        transInst,
+        DEFAULT_LEDGER_INTERACTIVE_TIMEOUT,
+        DEFAULT_LEDGER_NONINTERACTIVE_TIMEOUT
+      );
+    } catch (e) {
+      console.log('LEDGER:::CREATE APP ERROR', e);
     }
   }
 
@@ -82,7 +80,7 @@ export class BcLedgerBridge {
         payload: { error: e.toString() },
       });
     } finally {
-      // this.cleanUp();
+      this.cleanUp();
     }
   }
 
@@ -103,7 +101,7 @@ export class BcLedgerBridge {
         payload: { error: e.toString() },
       });
     } finally {
-      // this.cleanUp();
+      this.cleanUp();
     }
   }
 
