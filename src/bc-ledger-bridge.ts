@@ -127,6 +127,8 @@ export class BcLedgerBridge {
     hrp?: string;
     limit?: number;
   }) {
+    console.log(`hdPathStart ${hdPathStart}`);
+    console.log(typeof hdPathStart);
     if (!Array.isArray(hdPathStart) || hdPathStart.length < 5) {
       throw new Error(
         'hdPathStart must be an array containing at least 5 path nodes'

@@ -4,4 +4,4 @@ import { BcLedgerBridge } from './bc-ledger-bridge';
   new BcLedgerBridge();
 })();
 
-console.log('BEW < = > Binance Chain Ledger Bridge initialized! 2');
+console.log('BEW < = > Binance Chain Ledger Bridge initialized! 3');
