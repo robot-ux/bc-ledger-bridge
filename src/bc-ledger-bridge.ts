@@ -66,7 +66,7 @@ export class BcLedgerBridge {
   async unlock(replyAction: any, hdPath: any) {
     try {
       await this.makeApp();
-      const res = await this.getAddresses(hdPath);
+      const res = await this.getAddresses({ hdPathStart: hdPath });
 
       this.sendMessageToExtension({
         action: replyAction,
