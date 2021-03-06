@@ -128,6 +128,7 @@ export class LedgerClient {
     const address = crypto.getAddressFromPublicKey(
       (pk as Buffer).toString('hex')
     );
+
     return address;
   }
 
