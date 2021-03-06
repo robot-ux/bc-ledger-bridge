@@ -23,6 +23,8 @@ export class BcLedgerBridge {
         if (e && e.data && e.data.target === 'BC-LEDGER-IFRAME') {
           const { action, params } = e.data;
           const replyAction = `${action}-reply`;
+          console.log('action', action);
+          console.log('params ', JSON.stringify(params));
           switch (action) {
             case 'ledger-unlock':
               this.unlock(replyAction, params.hdPath);
