@@ -10,6 +10,7 @@ import {
   DEFAULT_LEDGER_OPEN_TIMEOUT,
   LEDGER_EXPECTED_MAJOR_VERSION,
   DEFAULT_GET_ADDRESSES_LIMIT,
+  DEFAULT_HD_PATH,
 } from './constants';
 import { TransportKeys, Props } from './types';
 
@@ -19,6 +20,8 @@ export class LedgerClient {
   private _nonInteractiveTimeout: number;
   private _app: LedgerApp | null;
   private _version: Version;
+  private _hdPath: Array<number>;
+  public page: number;
 
   constructor({
     transportKey = DEFAULT_LEDGER_TRANSPORT,
@@ -30,25 +33,26 @@ export class LedgerClient {
     this._nonInteractiveTimeout = nonInteractiveTimeout;
     this._app = null;
     this._version = {} as Version;
+    this._hdPath = DEFAULT_HD_PATH;
+    this.page = 0;
   }
 
-  async init(
-    callback: Function,
-    openTimeout: number = DEFAULT_LEDGER_OPEN_TIMEOUT
-  ) {
+  async unlock() {
     if (!this._app) {
       let transImpl = Ledger.transports[this._transportKey];
       if (this._transportKey === 'node' && !transImpl) {
         transImpl = require('@ledgerhq/hw-transport-node-hid').default;
       }
 
-      const transInst = await transImpl.create(openTimeout);
+      const transInst = await transImpl.create(DEFAULT_LEDGER_OPEN_TIMEOUT);
+
       // eslint-disable-next-line
       const app = new Ledger.app(
         transInst,
         this._interactiveTimeout,
         this._nonInteractiveTimeout
       );
+
       const version = (this._version = await app.getVersion());
       if (version.device_locked) {
         throw new Error('Ledger Device is locked, please unlock it first');
@@ -63,7 +67,36 @@ export class LedgerClient {
       this._app = app;
       this._version = version;
     }
-    callback && callback.call(this, this._app);
+  }
+
+  async getFirstPage() {
+    return await this.getAddresses({
+      hdPathStart: DEFAULT_HD_PATH,
+    });
+  }
+
+  async getPreviousPage() {
+    const index = (this.page - 1) * DEFAULT_GET_ADDRESSES_LIMIT;
+    const hdPath = this._hdPath.splice(this._hdPath.length - 1, 1, index);
+    if (this.page > 0) {
+      this.page -= 1;
+    }
+    return await this.getAddresses({
+      hdPathStart: hdPath,
+    });
+  }
+
+  async getNextPage() {
+    const index = (this.page + 1) * DEFAULT_GET_ADDRESSES_LIMIT;
+    const hdPath = this._hdPath.splice(this._hdPath.length - 1, 1, index);
+    this.page += 1;
+    return await this.getAddresses({
+      hdPathStart: hdPath,
+    });
+  }
+
+  setHdPath(hdPath: Array<number> = DEFAULT_HD_PATH) {
+    this._hdPath = hdPath;
   }
 
   mustHaveApp() {
@@ -78,7 +111,6 @@ export class LedgerClient {
   }
 
   async getVersion() {
-    console.debug('LedgerClient: getVersion()');
     this.mustHaveApp();
     if (this._version) {
       return Promise.resolve(this._version);
@@ -87,12 +119,10 @@ export class LedgerClient {
   }
 
   async getPublicKey(hdPath: number[]) {
-    console.debug('LedgerClient: getPublicKey()');
     return this.mustHaveApp().getPublicKey(hdPath);
   }
 
   async getAddress(hdPath: number[]) {
-    console.debug('LedgerClient: getAddress()');
     const response = await this.getPublicKey(hdPath);
     const { pk } = response;
     const address = crypto.getAddressFromPublicKey(
@@ -110,7 +140,6 @@ export class LedgerClient {
     hrp?: string;
     limit?: number;
   }) {
-    console.debug('LedgerClient: getAddresses()');
     if (!Array.isArray(hdPathStart) || hdPathStart.length < 5) {
       throw new Error(
         'hdPathStart must be an array containing at least 5 path nodes'

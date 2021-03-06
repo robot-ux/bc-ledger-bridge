@@ -4,6 +4,6 @@ export type TransportKeys = typeof TRANSPORT_KEYS[number];
 
 export interface Props {
   transportKey: TransportKeys;
-  interactiveTimeout: number;
-  nonInteractiveTimeout: number;
+  interactiveTimeout?: number;
+  nonInteractiveTimeout?: number;
 }
