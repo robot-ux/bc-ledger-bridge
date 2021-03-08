@@ -101,7 +101,7 @@ export class BcLedgerBridge {
       const pubKeyResp = await this.mustHaveApp().getPublicKey(path);
       const pubKey = crypto.getPublicKey(pubKeyResp!.pk!.toString('hex'));
       console.log(pubKey);
-      const res = await this.mustHaveApp().sign(tx, path);
+      const res = await this.mustHaveApp().sign(Buffer.from(tx, 'hex'), path);
       console.log(res);
       this.sendMessageToExtension({
         action: replyAction,
