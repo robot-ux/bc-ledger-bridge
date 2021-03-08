@@ -92,13 +92,17 @@ export class BcLedgerBridge {
   async signTransaction(replyAction: string, hdPath: string, tx: any) {
     try {
       console.log('start signing tx');
+      console.log('tx');
+      console.log(tx);
       await this.makeApp();
       const path = hdPath.split(',').map(item => Number(item));
-      const res = await this.mustHaveApp().sign(tx, path);
+      console.log('hdPath');
+      console.log(path);
       const pubKeyResp = await this.mustHaveApp().getPublicKey(path);
       const pubKey = crypto.getPublicKey(pubKeyResp!.pk!.toString('hex'));
-      console.log(res);
       console.log(pubKey);
+      const res = await this.mustHaveApp().sign(tx, path);
+      console.log(res);
       this.sendMessageToExtension({
         action: replyAction,
         success: true,
