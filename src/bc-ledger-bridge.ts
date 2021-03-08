@@ -89,7 +89,7 @@ export class BcLedgerBridge {
     }
   }
 
-  async signTransaction(replyAction: string, hdPath: any, tx: any) {
+  async signTransaction(replyAction: string, hdPath: string, tx: any) {
     try {
       console.log('start signing tx');
       await this.makeApp();
@@ -97,7 +97,10 @@ export class BcLedgerBridge {
       console.log('hd path');
       console.log(hdPath);
       console.log(typeof hdPath);
-      const res = await this.mustHaveApp().sign(tx, hdPath);
+      const res = await this.mustHaveApp().sign(
+        tx,
+        hdPath.split(',').map(item => Number(item))
+      );
       console.log(res);
       this.sendMessageToExtension({
         action: replyAction,
