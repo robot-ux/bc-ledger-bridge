@@ -25,7 +25,7 @@ export class BcLedgerBridge {
           const replyAction = `${action}-reply`;
           switch (action) {
             case 'ledger-unlock':
-              this.unlock(replyAction, params.hdPath);
+              this.unlock(replyAction, params.hdPath, params.hrp);
               break;
             case 'ledger-sign-transaction':
               this.signTransaction(replyAction, params.hdPath, params.tx);
@@ -61,11 +61,11 @@ export class BcLedgerBridge {
     this.transport.close();
   }
 
-  async unlock(replyAction: any, hdPath: any) {
+  async unlock(replyAction: any, hdPath: any, hrp: string) {
     try {
       console.log('start make ledger app');
       await this.makeApp();
-      const res = await this.getAddresses({ hdPathStart: hdPath });
+      const res = await this.getAddresses({ hdPathStart: hdPath, hrp });
       console.log('addresses: ');
       console.log(res);
 
