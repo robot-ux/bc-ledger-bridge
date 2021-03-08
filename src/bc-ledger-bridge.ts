@@ -44,7 +44,7 @@ export class BcLedgerBridge {
   async makeApp() {
     try {
       let transImpl = Ledger.transports['u2f'];
-      const transInst = await transImpl.create(15000);
+      const transInst = await transImpl.create(30000);
       this.transport = transInst;
       this.app = new Ledger.app(
         transInst,
@@ -63,8 +63,11 @@ export class BcLedgerBridge {
 
   async unlock(replyAction: any, hdPath: any) {
     try {
+      console.log('start make ledger app');
       await this.makeApp();
       const res = await this.getAddresses({ hdPathStart: hdPath });
+      console.log('addresses: ');
+      console.log(res);
 
       this.sendMessageToExtension({
         action: replyAction,
@@ -72,6 +75,8 @@ export class BcLedgerBridge {
         payload: res,
       });
     } catch (err) {
+      console.log('error');
+      console.log(err);
       const e = this.ledgerErrToMessage(err);
 
       this.sendMessageToExtension({
