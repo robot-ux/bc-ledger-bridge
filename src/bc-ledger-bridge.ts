@@ -97,11 +97,12 @@ export class BcLedgerBridge {
       console.log('hd path');
       console.log(hdPath);
       console.log(typeof hdPath);
-      const res = this.mustHaveApp().sign(tx, hdPath);
+      const res = await this.mustHaveApp().sign(tx, hdPath);
+      console.log(res);
       this.sendMessageToExtension({
         action: replyAction,
         success: true,
-        payload: res,
+        payload: res?.signature?.toString('hex'),
       });
     } catch (err) {
       console.log(err);
