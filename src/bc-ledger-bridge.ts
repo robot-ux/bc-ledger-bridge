@@ -93,19 +93,19 @@ export class BcLedgerBridge {
     try {
       console.log('start signing tx');
       await this.makeApp();
-      console.log(tx);
-      console.log('hd path');
-      console.log(hdPath);
-      console.log(typeof hdPath);
-      const res = await this.mustHaveApp().sign(
-        tx,
-        hdPath.split(',').map(item => Number(item))
-      );
+      const path = hdPath.split(',').map(item => Number(item));
+      const res = await this.mustHaveApp().sign(tx, path);
+      const pubKeyResp = await this.mustHaveApp().getPublicKey(path);
+      const pubKey = crypto.getPublicKey(pubKeyResp!.pk!.toString('hex'));
       console.log(res);
+      console.log(pubKey);
       this.sendMessageToExtension({
         action: replyAction,
         success: true,
-        payload: res?.signature?.toString('hex'),
+        payload: {
+          signature: res?.signature?.toString('hex'),
+          pubkey: pubKey.encode('hex', true),
+        },
       });
     } catch (err) {
       console.log(err);
