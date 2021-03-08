@@ -91,7 +91,12 @@ export class BcLedgerBridge {
 
   async signTransaction(replyAction: string, hdPath: any, tx: any) {
     try {
+      console.log('start signing tx');
       await this.makeApp();
+      console.log(tx);
+      console.log('hd path');
+      console.log(hdPath);
+      console.log(typeof hdPath);
       const res = this.mustHaveApp().sign(tx, hdPath);
       this.sendMessageToExtension({
         action: replyAction,
@@ -99,6 +104,7 @@ export class BcLedgerBridge {
         payload: res,
       });
     } catch (err) {
+      console.log(err);
       const e = this.ledgerErrToMessage(err);
       this.sendMessageToExtension({
         action: replyAction,
