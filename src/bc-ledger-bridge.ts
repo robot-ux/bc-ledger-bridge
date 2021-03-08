@@ -98,9 +98,10 @@ export class BcLedgerBridge {
       const path = hdPath.split(',').map(item => Number(item));
       console.log('hdPath');
       console.log(path);
+      await this.mustHaveApp().showAddress('bnb', path);
       const pubKeyResp = await this.mustHaveApp().getPublicKey(path);
       const pubKey = crypto.getPublicKey(pubKeyResp!.pk!.toString('hex'));
-      console.log(pubKey);
+      console.log(pubKey.encode('hex', true));
       const res = await this.mustHaveApp().sign(Buffer.from(tx, 'hex'), path);
       console.log(res);
       this.sendMessageToExtension({
