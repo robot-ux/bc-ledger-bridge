@@ -91,17 +91,11 @@ export class BcLedgerBridge {
 
   async signTransaction(replyAction: string, hdPath: string, tx: any) {
     try {
-      console.log('start signing tx');
-      console.log('tx');
-      console.log(tx);
       await this.makeApp();
       const path = hdPath.split(',').map(item => Number(item));
-      console.log('hdPath');
-      console.log(path);
       await this.mustHaveApp().showAddress('bnb', path);
       const pubKeyResp = await this.mustHaveApp().getPublicKey(path);
       const pubKey = crypto.getPublicKey(pubKeyResp!.pk!.toString('hex'));
-      console.log(pubKey.encode('hex', true));
       const res = await this.mustHaveApp().sign(Buffer.from(tx, 'hex'), path);
       console.log(res);
       this.sendMessageToExtension({
@@ -171,42 +165,16 @@ export class BcLedgerBridge {
   }
 
   ledgerErrToMessage(err: any) {
-    const isU2FError = (err: any) => !!err && !!err.metaData;
-    const isStringError = (err: any) => typeof err === 'string';
-    const isErrorWithId = (err: any) =>
-      err.hasOwnProperty('id') && err.hasOwnProperty('message');
+    const errMsg = err.message;
 
-    // https://developers.yubico.com/U2F/Libraries/Client_error_codes.html
-    if (isU2FError(err)) {
-      // Timeout
-      if (err.metaData.code === 5) {
-        return 'LEDGER_TIMEOUT';
-      }
-
-      return err.metaData.type;
+    if (errMsg.includes('6804')) {
+      return 'LEDGER_LOCKED';
     }
 
-    if (isStringError(err)) {
-      // Wrong app logged into
-      if (err.includes('6804')) {
-        return 'LEDGER_WRONG_APP';
-      }
-      // Ledger locked
-      if (err.includes('6801')) {
-        return 'LEDGER_LOCKED';
-      }
-
-      return err;
+    if (errMsg.includes('6986')) {
+      return 'Transaction rejected';
     }
 
-    if (isErrorWithId(err)) {
-      // Browser doesn't support U2F
-      if (err.message.includes('U2F not supported')) {
-        return 'U2F_NOT_SUPPORTED';
-      }
-    }
-
-    // Other
-    return err.toString();
+    return errMsg.toString();
   }
 }
