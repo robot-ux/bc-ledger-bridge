@@ -28,7 +28,12 @@ export class BcLedgerBridge {
               this.unlock(replyAction, params.hdPath, params.hrp);
               break;
             case 'ledger-sign-transaction':
-              this.signTransaction(replyAction, params.hdPath, params.tx);
+              this.signTransaction(
+                replyAction,
+                params.hdPath,
+                params.tx,
+                params.hrp
+              );
               break;
           }
         }
@@ -89,11 +94,16 @@ export class BcLedgerBridge {
     }
   }
 
-  async signTransaction(replyAction: string, hdPath: string, tx: any) {
+  async signTransaction(
+    replyAction: string,
+    hdPath: string,
+    tx: any,
+    hrp: string = 'bnb'
+  ) {
     try {
       await this.makeApp();
       const path = hdPath.split(',').map(item => Number(item));
-      await this.mustHaveApp().showAddress('bnb', path);
+      await this.mustHaveApp().showAddress(hrp, path);
       const pubKeyResp = await this.mustHaveApp().getPublicKey(path);
       const pubKey = crypto.getPublicKey(pubKeyResp!.pk!.toString('hex'));
       const res = await this.mustHaveApp().sign(Buffer.from(tx, 'hex'), path);
