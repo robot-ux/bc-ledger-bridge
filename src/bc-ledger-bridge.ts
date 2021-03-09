@@ -71,7 +71,7 @@ export class BcLedgerBridge {
       console.log('start make ledger app');
       await this.makeApp();
       const res = await this.getAddresses({
-        hdPathStart: hdPath.split('/').map(item => Number(item)),
+        hdPathStart: hdPath.split(',').map(item => Number(item)),
         hrp,
       });
       this.sendMessageToExtension({
