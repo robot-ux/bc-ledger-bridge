@@ -7,7 +7,7 @@ export declare class BcLedgerBridge {
     sendMessageToExtension(msg: any): void;
     makeApp(): Promise<void>;
     cleanUp(): void;
-    unlock(replyAction: any, hdPath: any, hrp: string): Promise<void>;
+    unlock(replyAction: any, hdPath: string, hrp: string): Promise<void>;
     signTransaction(replyAction: string, hdPath: string, tx: any, hrp?: string): Promise<void>;
     mustHaveApp(): LedgerApp;
     getPublicKey(hdPath: number[]): Promise<import("@binance-chain/javascript-sdk/lib/ledger/ledger-app").PublicKey>;

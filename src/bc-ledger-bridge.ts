@@ -66,14 +66,14 @@ export class BcLedgerBridge {
     this.transport.close();
   }
 
-  async unlock(replyAction: any, hdPath: any, hrp: string) {
+  async unlock(replyAction: any, hdPath: string, hrp: string) {
     try {
       console.log('start make ledger app');
       await this.makeApp();
-      const res = await this.getAddresses({ hdPathStart: hdPath, hrp });
-      console.log('addresses: ');
-      console.log(res);
-
+      const res = await this.getAddresses({
+        hdPathStart: hdPath.split('/').map(item => Number(item)),
+        hrp,
+      });
       this.sendMessageToExtension({
         action: replyAction,
         success: true,
