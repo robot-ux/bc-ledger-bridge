@@ -1,18 +1,22 @@
 {
-  "name": "@binance-chain/bc-ledger-bridge",
-  "version": "0.0.0-development",
+  "name": "@bctest/bc-ledger-bridge",
+  "version": "0.0.4",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
   "scripts": {
     "start": "tsdx watch",
     "build": "tsdx build",
     "test": "tsdx test",
     "lint": "tsdx lint src",
-    "prepare": "tsdx build"
+    "prepare": "yarn build"
   },
   "peerDependencies": {},
   "husky": {
