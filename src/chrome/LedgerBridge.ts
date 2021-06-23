@@ -27,13 +27,14 @@ export class LedgerBridge {
         DEFAULT_LEDGER_NONINTERACTIVE_TIMEOUT
       );
     } catch (e) {
-      console.log('LEDGER:::CREATE APP ERROR', e);
+      console.error('LEDGER:::CREATE APP ERROR', e);
+      throw new Error(this.ledgerErrToMessage(e));
     }
   }
 
-  cleanUp() {
+  async cleanUp() {
     this.app = null;
-    this.transport.close();
+    await this.transport.close();
   }
 
   async unlock(hdPath: string, hrp: string) {
@@ -49,7 +50,7 @@ export class LedgerBridge {
       console.error(err);
       return Promise.reject(this.ledgerErrToMessage(err));
     } finally {
-      this.cleanUp();
+      await this.cleanUp();
     }
   }
 
@@ -75,7 +76,7 @@ export class LedgerBridge {
       console.log(err);
       return Promise.reject(this.ledgerErrToMessage(err));
     } finally {
-      this.cleanUp();
+      await this.cleanUp();
     }
   }
 
